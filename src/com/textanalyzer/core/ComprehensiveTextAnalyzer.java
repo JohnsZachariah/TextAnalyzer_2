@@ -14,14 +14,14 @@ import java.util.regex.Pattern;
 /**
  * Concrete implementation of AbstractTextAnalyzer, implementing Searchable and Transformable.
  * Demonstrates:
- * - Inheritance (extends AbstractTextAnalyzer) with super constructor call (OOP Module 2)
- * - Multiple Interface Implementation (implements TextAnalyzer, Searchable, Transformable - OOP Module 3)
- * - Method Overriding and Dynamic Method Dispatch (OOP Module 2)
- * - Method Overloading (OOP Module 2)
- * - Java Collections Framework (ArrayList, HashMap, Map, Collections.sort - OOP Module 1 & 2)
- * - String and StringBuilder manipulation (OOP Module 1)
- * - Exception Handling (throw, throws, try-catch - OOP Module 3)
- * - SOLID Principles (OOP Module 4)
+ * - Inheritance (extends AbstractTextAnalyzer) with super constructor call
+ * - Multiple Interface Implementation (implements TextAnalyzer, Searchable, Transformable)
+ * - Method Overriding and Dynamic Method Dispatch
+ * - Method Overloading
+ * - Java Collections Framework (ArrayList, HashMap, Map, Collections.sort)
+ * - String and StringBuilder manipulation
+ * - Exception Handling (throw, throws, try-catch)
+ * - Clean Object-Oriented Architecture
  */
 public class ComprehensiveTextAnalyzer extends AbstractTextAnalyzer implements Searchable, Transformable {
 

@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastAnalysisResult = null;
     let currentReport = null;
     let lastTranslation = '';
+    let selectedFontId = localStorage.getItem('lexicoreFontId') || 'editorial';
+    let historyById = {};
 
     function getSessionId() {
         let id = localStorage.getItem('lexicoreSessionId');
@@ -33,10 +35,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const dropOverlay = document.getElementById('dropOverlay');
     const analyzeBtn = document.getElementById('analyzeBtn');
 
-    // Samples & Clear
-    const sampleTechBtn = document.getElementById('sampleTechBtn');
-    const sampleLitBtn = document.getElementById('sampleLitBtn');
     const clearTextBtn = document.getElementById('clearTextBtn');
+    const fontCatalog = document.getElementById('fontCatalog');
+    const applyFontBtn = document.getElementById('applyFontBtn');
+    const fontStatusText = document.getElementById('fontStatusText');
+    const dynamicFontStylesheet = document.getElementById('dynamicFontStylesheet');
+    const clearSessionHistoryBtn = document.getElementById('clearSessionHistoryBtn');
 
     // KPI Metrics
     const metricWords = document.getElementById('metricWords');
@@ -140,27 +144,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Theme Toggle
     const themeToggleBtn = document.getElementById('themeToggleBtn');
 
-    // Samples
-    const TECH_SAMPLE = `Object-Oriented Programming (OOP) is a fundamental programming paradigm based on the concept of objects. In Java, classes act as blueprints for creating objects that encapsulate state and behavior. The core pillars of OOP include Encapsulation, Abstraction, Inheritance, and Polymorphism.
-
-Encapsulation ensures data protection through private variables and public accessor methods. Inheritance allows a subclass to inherit fields and methods from a superclass, fostering high code reusability. Polymorphism enables dynamic method dispatch, where method calls are resolved at runtime.
-
-Through robust exception handling and SOLID design principles, Java software engineers construct scalable, maintainable, and high-performance applications capable of processing massive data sets.`;
-
-    const LIT_SAMPLE = `To be, or not to be, that is the question:
-Whether 'tis nobler in the mind to suffer
-The slings and arrows of outrageous fortune,
-Or to take arms against a sea of troubles
-And by opposing end them. To die—to sleep,
-No more; and by a sleep to say we end
-The heart-ache and the thousand natural shocks
-That flesh is heir to: 'tis a consummation
-Devoutly to be wish'd. To die, to sleep;
-To sleep, perchance to dream—ay, there's the rub:
-For in that sleep of death what dreams may come,
-When we have shuffled off this mortal coil,
-Must give us pause.`;
-
     // Initialize Theme
     const savedTheme = localStorage.getItem('theme') || 'dark';
     if (savedTheme === 'light') {
@@ -205,27 +188,10 @@ Must give us pause.`;
 
     mainTextInput.addEventListener('input', updateLiveStats);
 
-    // Sample Texts
-    sampleTechBtn.addEventListener('click', () => {
-        mainTextInput.value = TECH_SAMPLE;
-        sourceBadge.textContent = "Sample Text";
-        sourceDetails.textContent = "Computer Science & OOP";
-        updateLiveStats();
-        triggerAnalysis();
-    });
-
-    sampleLitBtn.addEventListener('click', () => {
-        mainTextInput.value = LIT_SAMPLE;
-        sourceBadge.textContent = "Literature Sample";
-        sourceDetails.textContent = "Shakespeare: Hamlet (Soliloquy)";
-        updateLiveStats();
-        triggerAnalysis();
-    });
-
     clearTextBtn.addEventListener('click', () => {
         mainTextInput.value = '';
-        sourceBadge.textContent = "Direct Input";
-        sourceDetails.textContent = "Ready for text analysis";
+        sourceBadge.textContent = "Manuscript";
+        sourceDetails.textContent = "Compose or paste a document to analyse";
         updateLiveStats();
         resetResults();
     });
@@ -280,7 +246,7 @@ Must give us pause.`;
         });
     });
 
-    function activateTab(tabId) {
+    function activateTab(tabId, shouldScroll = false) {
         tabBtns.forEach(b => b.classList.toggle('active', b.getAttribute('data-tab') === tabId));
         tabPanels.forEach(p => p.classList.toggle('active', p.id === tabId));
 
@@ -289,29 +255,41 @@ Must give us pause.`;
             loadSessionActivities();
         }
         if (tabId === 'tabDictionary') {
-            dictionaryWordInput.focus();
+            if (dictionaryWordInput) dictionaryWordInput.focus();
+        }
+        if (tabId === 'tabTranslate') {
+            if (translateTextBtn) translateTextBtn.focus();
+        }
+        if (shouldScroll) {
+            const targetPanel = document.getElementById(tabId);
+            if (targetPanel) {
+                targetPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }
     }
 
     openSearchTabBtn.addEventListener('click', () => {
-        activateTab('tabSearch');
+        activateTab('tabSearch', true);
         searchWordInput.focus();
     });
 
     openReplaceTabBtn.addEventListener('click', () => {
-        activateTab('tabReplace');
+        activateTab('tabReplace', true);
         findTargetInput.focus();
     });
 
     if (openDictionaryTabBtn) {
         openDictionaryTabBtn.addEventListener('click', () => {
-            activateTab('tabDictionary');
+            activateTab('tabDictionary', true);
             dictionaryWordInput.focus();
         });
     }
 
     if (openTranslateTabBtn) {
-        openTranslateTabBtn.addEventListener('click', () => activateTab('tabTranslate'));
+        openTranslateTabBtn.addEventListener('click', () => {
+            activateTab('tabTranslate', true);
+            if (translateTextBtn) translateTextBtn.focus();
+        });
     }
 
     // Dropdown toggles
@@ -658,6 +636,12 @@ Must give us pause.`;
         const words = parseInt(metricWords.textContent.replace(/,/g, '')) || 0;
         const chars = parseInt(metricCharsWithSpaces.textContent.replace(/,/g, '')) || 0;
         const sentences = parseInt(metricSentences.textContent.replace(/,/g, '')) || 0;
+        const vowels = lastAnalysisResult ? lastAnalysisResult.totalVowels : 0;
+        const consonants = lastAnalysisResult ? lastAnalysisResult.totalConsonants : 0;
+        const readingEase = lastAnalysisResult ? lastAnalysisResult.fleschReadingEase : 0.0;
+        const longestWord = lastAnalysisResult && lastAnalysisResult.longestWords && lastAnalysisResult.longestWords[0] ? lastAnalysisResult.longestWords[0] : '';
+        const readingTime = lastAnalysisResult ? lastAnalysisResult.readingTimeMinutes : 0.0;
+        const wordFreqs = lastAnalysisResult && lastAnalysisResult.wordFrequencies ? lastAnalysisResult.wordFrequencies.slice(0, 20) : [];
 
         try {
             const response = await fetch('/api/history', {
@@ -665,10 +649,17 @@ Must give us pause.`;
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     title: sourceBadge.textContent,
-                    preview: text.length > 80 ? text.substring(0, 80) + '...' : text,
+                    preview: text.length > 160 ? text.substring(0, 160) + '...' : text,
+                    fullText: text,
                     wordCount: words,
                     charCount: chars,
                     sentenceCount: sentences,
+                    vowelCount: vowels,
+                    consonantCount: consonants,
+                    readingEase: readingEase,
+                    longestWord: longestWord,
+                    readingTimeMinutes: readingTime,
+                    wordFrequencies: wordFreqs,
                     sessionId: getSessionId()
                 })
             });
@@ -691,19 +682,32 @@ Must give us pause.`;
             const res = await response.json();
             if (res.success && res.data) {
                 const records = res.data;
+                historyById = {};
+                records.forEach(rec => { historyById[rec.id] = rec; });
                 if (records.length === 0) {
                     historyListContainer.innerHTML = '<div class="empty-state">No saved analysis records found.</div>';
                     return;
                 }
 
                 historyListContainer.innerHTML = records.map(rec => `
-                    <div class="history-card">
+                    <div class="history-card" data-id="${escapeHtml(rec.id)}">
                         <div class="history-meta">
-                            <h5>${escapeHtml(rec.title)}</h5>
+                            <div class="history-title-row">
+                                <h5>${escapeHtml(rec.title)}</h5>
+                                <div class="history-actions">
+                                    <button class="btn btn-sm btn-secondary btn-load-rec" data-id="${escapeHtml(rec.id)}" title="Load complete text">
+                                        Load Text
+                                    </button>
+                                    <button class="btn btn-sm btn-outline text-danger btn-delete-rec" data-id="${escapeHtml(rec.id)}" title="Delete record">
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
                             <div class="history-stats">
                                 ${escapeHtml(rec.savedAt)} &bull; 
                                 <strong>${rec.wordCount}</strong> words &bull; 
-                                <strong>${rec.charCount}</strong> chars
+                                <strong>${rec.charCount}</strong> chars &bull;
+                                <strong>${rec.sentenceCount}</strong> sentences
                             </div>
                             <p class="text-muted" style="font-size: 0.8rem; margin-top: 4px;">${escapeHtml(rec.preview)}</p>
                         </div>
@@ -713,6 +717,99 @@ Must give us pause.`;
         } catch (error) {
             historyListContainer.innerHTML = '<div class="empty-state text-danger">Failed to load history.</div>';
         }
+    }
+
+    // History card item actions (Delete / Load)
+    historyListContainer.addEventListener('click', async (e) => {
+        const delBtn = e.target.closest('.btn-delete-rec');
+        if (delBtn) {
+            const id = delBtn.getAttribute('data-id');
+            if (id && confirm('Delete this saved analysis record?')) {
+                try {
+                    const response = await fetch('/api/history', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'delete', id: id })
+                    });
+                    const res = await response.json();
+                    if (res.success) {
+                        showToast('Record deleted successfully.');
+                        loadHistoryList();
+                    } else {
+                        showToast('Failed to delete record.');
+                    }
+                } catch (err) {
+                    showToast('Delete failed.');
+                }
+            }
+            return;
+        }
+
+        const loadBtn = e.target.closest('.btn-load-rec');
+        if (loadBtn) {
+            const id = loadBtn.getAttribute('data-id');
+            const rec = historyById[id];
+            const full = rec ? (rec.fullText || rec.preview || '') : '';
+            if (full) {
+                mainTextInput.value = full;
+                sourceBadge.textContent = rec.title || 'History';
+                sourceDetails.textContent = 'Restored complete document from SQLite';
+                updateLiveStats();
+                triggerAnalysis('Loaded from History');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                showToast('Loaded complete text into editor.');
+            }
+        }
+    });
+
+    // Clear all history button
+    const clearAllHistoryBtn = document.getElementById('clearAllHistoryBtn');
+    if (clearAllHistoryBtn) {
+        clearAllHistoryBtn.addEventListener('click', async () => {
+            if (!confirm('Are you sure you want to delete ALL saved analysis records? This cannot be undone.')) {
+                return;
+            }
+            try {
+                const response = await fetch('/api/history', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'clear' })
+                });
+                const res = await response.json();
+                if (res.success) {
+                    showToast('All analysis history deleted.');
+                    loadHistoryList();
+                } else {
+                    showToast('Failed to clear history.');
+                }
+            } catch (err) {
+                showToast('Failed to clear history.');
+            }
+        });
+    }
+
+    if (clearSessionHistoryBtn) {
+        clearSessionHistoryBtn.addEventListener('click', async () => {
+            if (!confirm('Clear this session\'s activity log? Saved analyses are kept.')) {
+                return;
+            }
+            try {
+                const response = await fetch('/api/sessions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'clear', sessionId: getSessionId() })
+                });
+                const res = await response.json();
+                if (res.success) {
+                    showToast('Session history cleared.');
+                    loadSessionActivities();
+                } else {
+                    showToast(res.message || 'Failed to clear session history.');
+                }
+            } catch (err) {
+                showToast('Failed to clear session history.');
+            }
+        });
     }
 
     refreshHistoryBtn.addEventListener('click', () => {
@@ -922,6 +1019,18 @@ Must give us pause.`;
         }
     });
 
+    // Download History CSV action
+    const downloadHistoryCsvBtn = document.getElementById('downloadHistoryCsvBtn');
+    if (downloadHistoryCsvBtn) {
+        downloadHistoryCsvBtn.addEventListener('click', async () => {
+            try {
+                // Ensure fresh CSV export is written to laptop disk
+                await fetch('/api/database/export-csv', { method: 'POST' });
+                showToast('Exported latest history to data/exports/analyses.csv');
+            } catch (ignored) {}
+        });
+    }
+
     // Helper: Escape HTML
     function escapeHtml(str) {
         if (!str) return '';
@@ -933,10 +1042,80 @@ Must give us pause.`;
             .replace(/'/g, '&#039;');
     }
 
-    // Auto-load sample text on start for quick demo
-    mainTextInput.value = TECH_SAMPLE;
-    sourceBadge.textContent = "Welcome Sample";
-    sourceDetails.textContent = "Computer Science & OOP";
+    function applyFontToEditor(font) {
+        if (!font) return;
+        if (font.stylesheetUrl && dynamicFontStylesheet) {
+            dynamicFontStylesheet.href = font.stylesheetUrl;
+        }
+        document.documentElement.style.setProperty('--font-editor', font.cssStack);
+        mainTextInput.style.fontFamily = font.cssStack;
+        localStorage.setItem('lexicoreFontId', font.id);
+        selectedFontId = font.id;
+        if (fontStatusText) {
+            fontStatusText.innerHTML = `Active typeface: <strong>${escapeHtml(font.name)}</strong> &mdash; applied via <code>POST /api/fonts</code>.`;
+        }
+        document.querySelectorAll('.font-card').forEach(card => {
+            card.classList.toggle('selected', card.dataset.fontId === font.id);
+        });
+    }
+
+    async function loadFontCatalog() {
+        if (!fontCatalog) return;
+        try {
+            const response = await fetch('/api/fonts');
+            const res = await response.json();
+            const fonts = (res.success && res.data && res.data.fonts) ? res.data.fonts : [];
+            if (!fonts.length) {
+                fontCatalog.innerHTML = '<div class="empty-state">Font catalog unavailable.</div>';
+                return;
+            }
+            fontCatalog.innerHTML = fonts.map(font => `
+                <button type="button" class="font-card${font.id === selectedFontId ? ' selected' : ''}" data-font-id="${escapeHtml(font.id)}">
+                    <div class="font-card-sample" style="font-family: ${escapeHtml(font.cssStack)}">Aa Bb</div>
+                    <div class="font-card-name">${escapeHtml(font.name)}</div>
+                    <div class="font-card-desc">${escapeHtml(font.description)}</div>
+                </button>
+            `).join('');
+
+            const saved = fonts.find(f => f.id === selectedFontId) || fonts[0];
+            applyFontToEditor(saved);
+        } catch (error) {
+            fontCatalog.innerHTML = '<div class="empty-state">Could not load fonts from the Java API.</div>';
+        }
+    }
+
+    if (fontCatalog) {
+        fontCatalog.addEventListener('click', (e) => {
+            const card = e.target.closest('.font-card');
+            if (!card) return;
+            selectedFontId = card.dataset.fontId;
+            document.querySelectorAll('.font-card').forEach(el => {
+                el.classList.toggle('selected', el === card);
+            });
+        });
+    }
+
+    if (applyFontBtn) {
+        applyFontBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/fonts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fontId: selectedFontId })
+                });
+                const res = await response.json();
+                if (res.success && res.data) {
+                    applyFontToEditor(res.data);
+                    showToast('Applied ' + res.data.name + ' to the editor.');
+                } else {
+                    showToast(res.message || 'Could not apply font.');
+                }
+            } catch (error) {
+                showToast('Font API request failed.');
+            }
+        });
+    }
+
     updateLiveStats();
-    triggerAnalysis();
+    loadFontCatalog();
 });

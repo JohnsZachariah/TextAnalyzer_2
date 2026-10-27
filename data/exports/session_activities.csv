@@ -1,0 +1,65 @@
+id,session_id,activity_type,source_text,result_text,extra_json,created_at
+1,c919ad76-24ee-467d-b90e-2e8f17464ca0,ANALYZE,"Object-Oriented Programming (OOP) is a fundamental programming paradigm based on the concept of objects. In Java, classes act as blueprints for creating objects that encapsulate state and behavior. The core pillars of OOP include Encapsulation, Abstraction, Inheritance, and Polymorphism.
+
+Encapsulation ensures data protection through private variables and public accessor methods. Inheritance allows a subclass to inherit fields and methods from a superclass, fostering high code reusability. Polymorphism enables dynamic method dispatch, where method calls are resolved at runtime.
+
+Through robust exception handling and SOLID design principles, Java software engineers construct scalable, maintainable, and high-performance applications capable of processing massive data sets.","101 words, 7 sentences","{""sourceName"":""Welcome Sample"",""wordCount"":101}",2026-10-27 18:47:01
+2,verify-session-1,DICTIONARY,algorithm,A collection of ordered steps that solve a mathematical problem. A precise step-by-step plan for a computational procedure that possibly begins with an input value and yields an output value in a finite number of steps.,"{""fromCache"":false}",2026-10-27 18:47:12
+3,verify-session-1,TRANSLATE,Hello student,नमस्ते छात्र,"{""targetLang"":""hi"",""fromCache"":false}",2026-10-27 18:47:14
+4,verify-session-1,TRANSLATE,Hello student,ഹലോ വിദ്യാർത്ഥി,"{""targetLang"":""ml"",""fromCache"":false}",2026-10-27 18:47:15
+5,c919ad76-24ee-467d-b90e-2e8f17464ca0,ANALYZE,"Object-Oriented Programming (OOP) is a fundamental programming paradigm based on the concept of objects. In Java, classes act as blueprints for creating objects that encapsulate state and behavior. The core pillars of OOP include Encapsulation, Abstraction, Inheritance, and Polymorphism.
+
+Encapsulation ensures data protection through private variables and public accessor methods. Inheritance allows a subclass to inherit fields and methods from a superclass, fostering high code reusability. Polymorphism enables dynamic method dispatch, where method calls are resolved at runtime.
+
+Through robust exception handling and SOLID design principles, Java software engineers construct scalable, maintainable, and high-performance applications capable of processing massive data sets.","101 words, 7 sentences","{""sourceName"":""Welcome Sample"",""wordCount"":101}",2026-10-27 18:47:18
+24,SESS-DEMO-VIVA-01,ANALYZE,Java OOP principles sample text,"85 words, 592 chars",{},2026-10-27 10:15:00
+25,SESS-DEMO-VIVA-01,SEARCH,polymorphism,Found 4 occurrences,"{""query"":""polymorphism""}",2026-10-27 10:18:00
+26,SESS-DEMO-VIVA-01,DICTIONARY,polymorphism,The condition of occurring in several different forms.,{},2026-10-27 10:20:00
+27,SESS-DEMO-VIVA-01,TRANSLATE,Object-Oriented Programming,ऑब्जेक्ट-ओरिएंटेड प्रोग्रामिंग (hi),"{""lang"":""hi""}",2026-10-27 10:25:00
+28,SESS-DEMO-VIVA-01,EXPORT,DEMO-OOP-001,Report exported to data/reports/report_DEMO-OOP-001.txt,{},2026-10-27 10:30:00
+29,SESS-DEMO-VIVA-01,ANALYZE,Java OOP principles sample text,"85 words, 592 chars",{},2026-10-27 10:15:00
+30,SESS-DEMO-VIVA-01,SEARCH,polymorphism,Found 4 occurrences,"{""query"":""polymorphism""}",2026-10-27 10:18:00
+31,SESS-DEMO-VIVA-01,DICTIONARY,polymorphism,The condition of occurring in several different forms.,{},2026-10-27 10:20:00
+32,SESS-DEMO-VIVA-01,TRANSLATE,Object-Oriented Programming,ऑब्जेक्ट-ओरिएंटेड प्रोग्रामिंग (hi),"{""lang"":""hi""}",2026-10-27 10:25:00
+33,SESS-DEMO-VIVA-01,EXPORT,DEMO-OOP-001,Report exported to data/reports/report_DEMO-OOP-001.txt,{},2026-10-27 10:30:00
+34,SESS-DEMO-VIVA-01,ANALYZE,Java OOP principles sample text,"85 words, 592 chars",{},2026-10-27 10:15:00
+35,SESS-DEMO-VIVA-01,SEARCH,polymorphism,Found 4 occurrences,"{""query"":""polymorphism""}",2026-10-27 10:18:00
+36,SESS-DEMO-VIVA-01,DICTIONARY,polymorphism,The condition of occurring in several different forms.,{},2026-10-27 10:20:00
+37,SESS-DEMO-VIVA-01,TRANSLATE,Object-Oriented Programming,ऑब्जेक्ट-ओरिएंटेड प्रोग्रामिंग (hi),"{""lang"":""hi""}",2026-10-27 10:25:00
+38,SESS-DEMO-VIVA-01,EXPORT,DEMO-OOP-001,Report exported to data/reports/report_DEMO-OOP-001.txt,{},2026-10-27 10:30:00
+61,a0a8d727-a897-47b5-8836-b50d08e60592,ANALYZE,"If you can keep your head when all about you   
+    Are losing theirs and blaming it on you,   
+If you can trust yourself when all men doubt you,
+    But make allowance for their doubting too;   
+If you can wait and not be tired by waiting,
+    Or being lied about, don’t deal in lies,
+Or being hated, don’t give way to hating,
+    And yet don’t look too good, nor talk too wise:
+
+If you can dream—and not make dreams your master;   
+    If you can think—and not make thoughts your aim;   
+If you can meet with Triumph and Disaster
+    And treat those two impostors just the same;   
+If you can bear to hear the truth you’ve spoken
+    Twisted by knaves to make a trap for fools,
+Or watch the things you gave your life to, broken,
+    And stoop and build ’em up with worn-out tools:
+
+If you can make one heap of all your winnings
+    And risk it on one turn of pitch-and-toss,
+And lose, and start again at your beginnings
+    And never breathe a word about your loss;
+If you can force your heart and nerve and sinew
+    To serve your turn long after they are gone,   
+And so hold on when there is nothing in you
+    Except the Will which says to them: ‘Hold on!’
+
+If you can talk with crowds and keep your virtue,   
+    Or walk with Kings—nor lose the common touch,
+If neither foes nor loving friends can hurt you,
+    If all men count with you, but none too much;
+If you can fill the unforgiving minute
+    With sixty seconds’ worth of distance run,   
+Yours is the Earth and everything that’s in it,   
+    And—which is more—you’ll be a Man, my son!
+","288 words, 1 sentences","{""sourceName"":""Manuscript"",""wordCount"":288}",2026-10-27 22:57:10

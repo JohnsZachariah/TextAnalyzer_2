@@ -8,10 +8,10 @@ import com.textanalyzer.model.TextDocument;
 /**
  * Abstract base class for Text Analyzers.
  * Demonstrates:
- * - Abstract Classes vs Interfaces (OOP Module 3)
- * - Inheritance & Superclass state (OOP Module 2)
- * - Protected members and constructor initialization (OOP Module 2)
- * - Method Overloading (OOP Module 2)
+ * - Abstract Classes and Interfaces
+ * - Inheritance & Superclass state
+ * - Protected members and constructor initialization
+ * - Method Overloading
  * - Template Method Pattern
  */
 public abstract class AbstractTextAnalyzer implements TextAnalyzer {
@@ -22,7 +22,7 @@ public abstract class AbstractTextAnalyzer implements TextAnalyzer {
 
     /**
      * Default constructor chaining to parameterized constructor.
-     * Demonstrates 'this' keyword and constructor chaining (OOP Module 2).
+     * Demonstrates 'this' keyword and constructor chaining.
      */
     public AbstractTextAnalyzer() {
         this("Core Text Analyzer", "1.0.0");
@@ -73,7 +73,7 @@ public abstract class AbstractTextAnalyzer implements TextAnalyzer {
 
     /**
      * Abstract method to be implemented by concrete subclasses.
-     * Demonstrates Dynamic Method Dispatch (OOP Module 2).
+     * Demonstrates Dynamic Method Dispatch.
      */
     @Override
     public abstract AnalysisResult analyze(TextDocument document) throws TextAnalysisException;

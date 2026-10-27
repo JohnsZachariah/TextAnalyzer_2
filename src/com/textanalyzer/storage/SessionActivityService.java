@@ -19,7 +19,7 @@ import java.util.UUID;
 public class SessionActivityService {
 
     private static final DateTimeFormatter TS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private static final int TEXT_LIMIT = 8000;
+    private static final int TEXT_LIMIT = 1_000_000;
     private static volatile SessionActivityService instance;
 
     private final DatabaseManager databaseManager;
@@ -132,6 +132,21 @@ public class SessionActivityService {
         }
         sb.append("]");
         return sb.toString();
+    }
+
+    public int clearSessionActivities(String sessionId) {
+        if (!databaseManager.isAvailable() || sessionId == null || sessionId.trim().isEmpty()) {
+            return 0;
+        }
+        String sql = "DELETE FROM session_activities WHERE session_id = ?";
+        try (Connection conn = databaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, sessionId.trim());
+            return ps.executeUpdate();
+        } catch (Exception e) {
+            System.err.println("[SessionActivityService] Failed to clear session activities: " + e.getMessage());
+            return 0;
+        }
     }
 
     public String activitiesToJson(List<SessionActivity> activities) {

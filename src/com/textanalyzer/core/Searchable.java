@@ -4,7 +4,7 @@ import com.textanalyzer.model.SearchResult;
 
 /**
  * Interface defining search functionality within text.
- * Demonstrates Interface Segregation Principle (SOLID - OOP Module 4).
+ * Demonstrates Interface Segregation Principle.
  */
 public interface Searchable {
 

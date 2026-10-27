@@ -4,7 +4,7 @@ import com.textanalyzer.model.CaseType;
 
 /**
  * Interface defining text transformation operations (Find & Replace, Case Conversion).
- * Demonstrates Interface Segregation Principle (SOLID - OOP Module 4).
+ * Demonstrates Interface Segregation Principle.
  */
 public interface Transformable {
 

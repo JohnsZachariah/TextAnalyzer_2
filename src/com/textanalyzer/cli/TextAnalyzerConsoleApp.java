@@ -79,7 +79,7 @@ public class TextAnalyzerConsoleApp {
                     translateEnglishToHindi();
                     break;
                 case "9":
-                    viewDatabaseHistory();
+                    manageSqlDatabase();
                     break;
                 case "10":
                     exportReport();
@@ -118,7 +118,7 @@ public class TextAnalyzerConsoleApp {
         System.out.println(" 6. Case Conversion (Upper, Lower, Title, Sentence)");
         System.out.println(" 7. Look Up Word Meaning (Free Dictionary API + JDBC Cache)");
         System.out.println(" 8. Translate English to Hindi / Malayalam (Free Translator API + JDBC Cache)");
-        System.out.println(" 9. View SQL Database History & JDBC Status");
+        System.out.println(" 9. History & CSV Storage (View, Delete, Export CSV)");
         System.out.println(" 10. Export Analysis Report (.txt or .json)");
         System.out.println(" 11. Launch Web Server (Browser Application)");
         System.out.println(" 12. Exit Application");
@@ -171,17 +171,22 @@ public class TextAnalyzerConsoleApp {
             ReportExporter exporter = ReportExporterFactory.getExporter("TEXT");
             System.out.println(exporter.export(currentResult));
 
-            // Auto-persist to SQL database history via JDBC
-            String preview = currentDocument.getContent().length() > 60
-                    ? currentDocument.getContent().substring(0, 60) + "..."
-                    : currentDocument.getContent();
+            String fullText = currentDocument.getContent() != null ? currentDocument.getContent() : "";
+            String preview = fullText.length() > 160 ? fullText.substring(0, 160) + "..." : fullText;
             storageService.saveAnalysisRecord(new HistoryRecord(
                     currentResult.getDocumentId(),
                     currentDocument.getSourceName(),
-                    preview,
+                    preview, null,
                     currentResult.getWordCount(),
                     currentResult.getCharCountWithSpaces(),
-                    currentResult.getSentenceCount()
+                    currentResult.getSentenceCount(),
+                    currentResult.getTotalVowels(),
+                    currentResult.getTotalConsonants(),
+                    currentResult.getFleschReadingEase(),
+                    currentResult.getLongestWords().isEmpty() ? "" : currentResult.getLongestWords().get(0),
+                    currentResult.getReadingTimeMinutes(),
+                    currentResult.getWordFrequencies(),
+                    fullText
             ));
             System.out.println("[✔] Analysis saved to local SQL database via JDBC.");
         } catch (Exception e) {
@@ -343,32 +348,146 @@ public class TextAnalyzerConsoleApp {
         }
     }
 
-    private void viewDatabaseHistory() {
-        System.out.println("\n--- [9] SQL DATABASE & PERSISTENT HISTORY ---");
-        Map<String, Object> stats = databaseManager.getDatabaseStats();
-        System.out.printf(" Storage Backend: %s\n", stats.get("databaseType"));
-        System.out.printf(" JDBC Driver:     %s (Available: %s)\n", stats.get("jdbcUrl"), stats.get("driverAvailable"));
-        System.out.printf(" Total Analyses:  %s records\n", stats.get("analysesCount"));
-        System.out.printf(" Cached Words:    %s words\n", stats.get("cachedWordsCount"));
-        System.out.printf(" Cached Trans:    %s translations\n", stats.get("cachedTranslationsCount"));
-        System.out.println("--------------------------------------------------------");
+    private void manageSqlDatabase() {
+        boolean inDbMenu = true;
+        while (inDbMenu) {
+            System.out.println("\n========================================================");
+            System.out.println("         ANALYSIS HISTORY & CSV STORAGE (CLI)           ");
+            System.out.println("========================================================");
+            Map<String, Object> stats = databaseManager.getDatabaseStats();
+            System.out.printf(" Database File: %s (%s KB)\n", stats.get("absolutePath"), stats.get("fileSizeKb"));
+            System.out.printf(" CSV Export:   data/exports/analyses.csv\n");
+            System.out.printf(" Total Saved:  %s records\n", stats.get("analysesCount"));
+            System.out.println("--------------------------------------------------------");
+            System.out.println(" 1. View Saved Analysis History");
+            System.out.println(" 2. Delete History Record by ID");
+            System.out.println(" 3. Clear All Analysis History");
+            System.out.println(" 4. Export History to CSV (data/exports/analyses.csv)");
+            System.out.println(" 5. View Storage Engine Status");
+            System.out.println(" 6. Return to Main Menu");
+            System.out.println("========================================================");
+            System.out.print("Select Action (1-6): ");
+            String choice = scanner.nextLine().trim();
 
+            switch (choice) {
+                case "1":
+                    browseAnalysesWithWords();
+                    break;
+                case "2":
+                    deleteHistoryRecordPrompt();
+                    break;
+                case "3":
+                    clearAllHistoryPrompt();
+                    break;
+                case "4":
+                    exportHistoryToCsvOnly();
+                    break;
+                case "5":
+                    displayStorageStatusOnly(stats);
+                    break;
+                case "6":
+                    inDbMenu = false;
+                    break;
+                default:
+                    System.out.println("[!] Invalid choice. Please enter 1-6.");
+            }
+
+            if (inDbMenu) {
+                System.out.println("\nPress ENTER to continue in History Menu...");
+                scanner.nextLine();
+            }
+        }
+    }
+
+    private void displayStorageStatusOnly(Map<String, Object> stats) {
+        System.out.println("\n--- STORAGE ENGINE STATUS ---");
+        System.out.printf(" Backend:       %s\n", stats.get("databaseType"));
+        System.out.printf(" Driver:        %s\n", stats.get("driverClass"));
+        System.out.printf(" Physical File: %s\n", stats.get("absolutePath"));
+        System.out.printf(" File Size:     %s KB\n", stats.get("fileSizeKb"));
+        System.out.printf(" Analyses:      %s records\n", stats.get("analysesCount"));
+        System.out.printf(" Sessions:      %s records\n", stats.get("sessionsCount"));
+    }
+
+    private void browseAnalysesWithWords() {
+        System.out.println("\n--- SAVED ANALYSIS HISTORY ---");
         try {
             List<HistoryRecord> history = storageService.loadHistory();
             if (history.isEmpty()) {
-                System.out.println("No saved analysis records found in SQL database.");
+                System.out.println("No saved analysis records found in database.");
                 return;
             }
-            System.out.println("Recent SQL Records (Top " + history.size() + "):\n");
+
             for (int i = 0; i < history.size(); i++) {
                 HistoryRecord h = history.get(i);
-                System.out.printf(" [%2d] ID: %s | Saved: %s | Source: %s\n", (i + 1), h.getId(), h.getSavedAt(), h.getTitle());
-                System.out.printf("      Words: %d | Chars: %d | Sentences: %d\n",
-                        h.getWordCount(), h.getCharCount(), h.getSentenceCount());
+                System.out.printf(" [%2d] ID: %s | %s\n", (i + 1), h.getId(), h.getTitle());
+                System.out.printf("      Saved: %s | Words: %d | Chars: %d | Sentences: %d\n",
+                        h.getSavedAt(), h.getWordCount(), h.getCharCount(), h.getSentenceCount());
+
+                List<WordFrequency> topWords = ((JdbcStorageService) storageService).loadWordFrequencies(h.getId());
+                if (!topWords.isEmpty()) {
+                    StringBuilder sb = new StringBuilder("      Top Words: ");
+                    for (int j = 0; j < Math.min(topWords.size(), 6); j++) {
+                        if (j > 0) sb.append(", ");
+                        sb.append(topWords.get(j).getWord()).append(" (").append(topWords.get(j).getCount()).append(")");
+                    }
+                    System.out.println(sb.toString());
+                }
                 System.out.printf("      Preview: %s\n\n", h.getPreview());
             }
         } catch (Exception e) {
-            System.out.println("[✘] Error loading SQL records: " + e.getMessage());
+            System.out.println("[✘] Error loading analyses: " + e.getMessage());
+        }
+    }
+
+    private void deleteHistoryRecordPrompt() {
+        System.out.println("\n--- DELETE HISTORY RECORD ---");
+        System.out.print("Enter Record ID to delete (e.g. HIST-...): ");
+        String id = scanner.nextLine().trim();
+        if (id.isEmpty()) {
+            System.out.println("[!] No ID entered.");
+            return;
+        }
+
+        try {
+            boolean deleted = storageService.deleteAnalysisRecord(id);
+            if (deleted) {
+                System.out.println("[✔] Successfully deleted record '" + id + "' from database and disk.");
+            } else {
+                System.out.println("[!] Record ID not found or already deleted.");
+            }
+        } catch (Exception e) {
+            System.out.println("[✘] Error deleting record: " + e.getMessage());
+        }
+    }
+
+    private void clearAllHistoryPrompt() {
+        System.out.println("\n--- CLEAR ALL ANALYSIS HISTORY ---");
+        System.out.print("Are you sure you want to delete ALL saved analysis records? (y/n): ");
+        String confirm = scanner.nextLine().trim();
+        if ("y".equalsIgnoreCase(confirm) || "yes".equalsIgnoreCase(confirm)) {
+            try {
+                storageService.clearHistory();
+                System.out.println("[✔] All analysis history successfully cleared.");
+            } catch (Exception e) {
+                System.out.println("[✘] Error clearing history: " + e.getMessage());
+            }
+        } else {
+            System.out.println("Canceled.");
+        }
+    }
+
+    private void exportHistoryToCsvOnly() {
+        System.out.println("\n--- EXPORT HISTORY TO CSV ---");
+        try {
+            databaseManager.exportAllTablesToCsv();
+            File csvFile = new File(DatabaseManager.EXPORTS_DIR, "analyses.csv");
+            System.out.println("[✔] Analysis history successfully exported to CSV spreadsheet!");
+            System.out.println("    File Path: " + csvFile.getAbsolutePath());
+            System.out.println("    Size:      " + csvFile.length() + " bytes");
+            System.out.println("    You can open this file directly in Microsoft Excel, Numbers, or Google Sheets.");
+        } catch (Exception e) {
+            System.out.println("[✘] Error exporting CSV: " + e.getMessage());
         }
     }
 

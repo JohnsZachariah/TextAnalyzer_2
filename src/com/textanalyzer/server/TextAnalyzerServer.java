@@ -64,6 +64,7 @@ public class TextAnalyzerServer {
         server.createContext("/api/translate", new TranslateHandler(translationService));
         server.createContext("/api/sessions", new SessionHandler(SessionActivityService.getInstance()));
         server.createContext("/api/database", new DatabaseHandler(databaseManager));
+        server.createContext("/api/fonts", new FontHandler());
 
         // Multi-threaded executor for handling concurrent browser requests
         server.setExecutor(Executors.newFixedThreadPool(8));

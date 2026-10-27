@@ -19,7 +19,7 @@ public abstract class BaseApiHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         // Support CORS preflight
         exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
-        exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
         exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type");
 
         if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {

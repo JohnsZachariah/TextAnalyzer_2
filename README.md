@@ -23,10 +23,14 @@ This application strictly adheres to the **KTU PBCST304 Object Oriented Programm
    - **Find & Replace:** Target replacement with live preview and "Apply to Main Editor" action.
    - **Case Conversion:** Instant conversion to **UPPERCASE**, **lowercase**, **Title Case**, or **Sentence case**.
 
-3. **File I/O & Permanent Storage (Persistence Requirement):**
+3. **File I/O, SQL Database & JDBC Persistence (Module 4):**
+   - **Embedded SQLite Database via JDBC:** Physical file storage on laptop at `data/textanalyzer.db` with zero external server dependencies.
+   - **Relational 1-to-N Schema with Foreign Keys:** `analyses` parent table and `analysis_words` child table linked via `FOREIGN KEY ... ON DELETE CASCADE`.
+   - **ACID Transactions:** Manual transaction demarcation (`commit` / `rollback`) and PreparedStatement batch updates.
+   - **Live SQL Database Studio:** Web UI tab & CLI Option 9 with schema inspector, table data browser, and live interactive SQL query console.
+   - **Laptop File Exports:** Generates standard SQL dump (`data/textanalyzer_dump.sql`) and CSV spreadsheets (`data/exports/*.csv`).
+   - **External Configuration:** JDBC settings externalized in `data/database.properties`.
    - **File Upload & Drag-and-Drop:** Accepts `.txt`, `.md`, `.csv`, `.log`, and `.json` files.
-   - **External File Adapter:** Loads external files directly via the **Adapter Pattern** (`FileSourceAdapter`).
-   - **Persistent Analysis History:** Saves analysis records permanently to `data/history.json`.
    - **Report Exporters:** Generates and exports downloadable reports in **Plain Text (.txt)** or **JSON (.json)** formats via the **Strategy Pattern**.
 
 4. **Dual Running Modes:**
@@ -94,25 +98,37 @@ Open your terminal in the project directory and execute:
 ./run.sh
 ```
 This script will prompt you to choose between:
-- **1:** Launch Web Application (Default)
-- **2:** Launch Menu-Driven Console Application
-- **3:** Recompile Sources
+- **1:** Launch Web Application (Default - includes SQL Studio)
+- **2:** Launch Menu-Driven Console Application (CLI with DB Manager)
+- **3:** Compile Sources
+- **4:** Run SQL Database & JDBC Verification Suite (Staff Evaluation)
+- **5:** Exit
 
 ---
 
-### Option 2: Directly Launch the Web Application
+### Option 2: Run SQL Database & JDBC Verification Suite (Staff Demo)
+To immediately verify and demonstrate the SQL JDBC setup to staff in 3 seconds:
+```bash
+./verify-db.sh
+```
+*(Runs 9 automated tests verifying JDBC drivers, physical file storage on laptop, foreign keys, ACID transactions, relational JOINs, SQL dump generation, and CSV exports)*
+
+---
+
+### Option 3: Directly Launch the Web Application
 ```bash
 ./run-web.sh
 ```
 Then open your web browser at:
-👉 **[http://localhost:8080](http://localhost:8080)**
+👉 **[http://localhost:8080](http://localhost:8080)** (navigate to the **"🗄️ SQL Database & JDBC"** tab to inspect the database, run queries, and download exports).
 
 ---
 
-### Option 3: Directly Launch the Console Application
+### Option 4: Directly Launch the Console Application
 ```bash
 ./run-console.sh
 ```
+Select **Option 9** from the menu to open the interactive SQL Database Manager in the terminal.
 
 ---
 

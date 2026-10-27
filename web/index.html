@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link id="dynamicFontStylesheet" rel="stylesheet" href="">
 </head>
 <body class="dark-theme">
     <!-- Header -->
@@ -24,7 +25,7 @@
                 </div>
                 <div>
                     <h1 class="logo-title">LexiCore Analyzer</h1>
-                    <span class="logo-subtitle">Java OOP Backend &bull; REST API &bull; MVC Architecture</span>
+                    <span class="logo-subtitle">Editorial text analysis &bull; Java REST &bull; SQLite</span>
                 </div>
             </div>
 
@@ -56,14 +57,11 @@
         <section class="card input-section">
             <div class="section-header">
                 <div class="source-info">
-                    <span class="badge badge-primary" id="sourceBadge">Direct Input</span>
-                    <span class="source-details" id="sourceDetails">Ready for text analysis</span>
+                    <span class="badge badge-primary" id="sourceBadge">Manuscript</span>
+                    <span class="source-details" id="sourceDetails">Compose or paste a document to analyse</span>
                 </div>
-                <div class="quick-samples">
-                    <span class="sample-label">Samples:</span>
-                    <button class="btn btn-sm btn-ghost" id="sampleTechBtn">Technology</button>
-                    <button class="btn btn-sm btn-ghost" id="sampleLitBtn">Literature</button>
-                    <button class="btn btn-sm btn-ghost text-danger" id="clearTextBtn">Clear</button>
+                <div class="editor-toolbar">
+                    <button class="btn btn-sm btn-ghost text-danger" id="clearTextBtn">Clear document</button>
                 </div>
             </div>
 
@@ -71,8 +69,8 @@
             <div class="editor-wrapper">
                 <textarea 
                     id="mainTextInput" 
-                    placeholder="Type or paste your text here to begin analysis, or drag and drop a .txt file..."
-                    rows="9"
+                    placeholder="Begin writing, paste a passage, or drop a text file here."
+                    rows="11"
                     spellcheck="false"
                 ></textarea>
                 <div id="dropOverlay" class="drop-overlay hidden">
@@ -171,6 +169,18 @@
                     </div>
                 </div>
             </div>
+        </section>
+
+        <!-- Typography / Font API -->
+        <section class="card typography-section">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Typography</h2>
+                    <p class="text-muted" id="fontStatusText">Select a typeface. The font catalog is served by <code>GET /api/fonts</code>; applying a face calls <code>POST /api/fonts</code>.</p>
+                </div>
+                <button class="btn btn-primary btn-sm" id="applyFontBtn">Apply selected font</button>
+            </div>
+            <div class="font-grid" id="fontCatalog"></div>
         </section>
 
         <!-- KPI Metrics Grid -->
@@ -282,7 +292,7 @@
                     🌐 Translate
                 </button>
                 <button class="tab-btn" data-tab="tabHistory">
-                    💾 Sessions & History
+                    💾 History &amp; Storage
                 </button>
             </div>
 
@@ -522,25 +532,44 @@
                     </div>
                 </div>
 
-                <!-- TAB 8: History & Session Activity -->
+                <!-- TAB 8: History & Local Storage (Simplified) -->
                 <div class="tab-panel" id="tabHistory">
                     <div class="history-panel">
                         <div class="history-header">
                             <div>
-                                <h4 class="subhead">JDBC SQLite Database</h4>
-                                <p class="text-muted" id="databaseStatusText">Sessions and activities stored in data/textanalyzer.db via JDBC.</p>
+                                <h4 class="subhead">Analysis History &amp; Storage</h4>
+                                <p class="text-muted" id="databaseStatusText">Saved analyses keep the complete document in SQLite (<code>analyses.full_text</code>) via JDBC.</p>
                             </div>
-                            <button class="btn btn-sm btn-secondary" id="refreshHistoryBtn">Refresh</button>
+                            <div class="history-header-actions">
+                                <a href="/api/database/download-csv?table=analyses" class="btn btn-primary btn-sm" id="downloadHistoryCsvBtn" download="analyses.csv">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                    Download CSV
+                                </a>
+                                <button class="btn btn-sm btn-outline text-danger" id="clearAllHistoryBtn">Clear saved analyses</button>
+                                <button class="btn btn-sm btn-secondary" id="refreshHistoryBtn">Refresh</button>
+                            </div>
                         </div>
 
-                        <h4 class="subhead">This session's activities</h4>
-                        <div class="history-list" id="sessionActivityList">
-                            <div class="empty-state">No activities yet. Analyze, look up, or translate text.</div>
+                        <div class="storage-info-bar">
+                            <span class="badge badge-success">ONLINE</span>
+                            <span class="text-muted" style="font-size: 0.82rem;">Database: SQLite JDBC &bull; Storage: <code>data/textanalyzer.db</code> &bull; Exports: <code>data/exports/analyses.csv</code></span>
                         </div>
 
-                        <h4 class="subhead" style="margin-top: 22px;">Saved analysis records</h4>
+                        <h4 class="subhead" style="margin-top: 18px;">Saved Analysis Records</h4>
                         <div class="history-list" id="historyListContainer">
-                            <div class="empty-state">No saved history sessions yet. Click "Save" on any analysis!</div>
+                            <div class="empty-state">No saved history records yet. Click "Save" on any analysis to store it!</div>
+                        </div>
+
+                        <div class="history-header" style="margin-top: 24px;">
+                            <h4 class="subhead">This session</h4>
+                            <button class="btn btn-sm btn-outline text-danger" id="clearSessionHistoryBtn">Clear session history</button>
+                        </div>
+                        <div class="history-list" id="sessionActivityList">
+                            <div class="empty-state">No activities yet. Analyse, look up, or translate text.</div>
                         </div>
                     </div>
                 </div>

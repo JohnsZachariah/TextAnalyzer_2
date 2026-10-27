@@ -7,10 +7,10 @@ import com.textanalyzer.model.TextDocument;
 /**
  * Interface defining the contract for text analysis operations.
  * Demonstrates:
- * - Interface Definition (OOP Module 3)
- * - Method Overloading in Interface (OOP Module 2)
- * - Checked Exception declaration (OOP Module 3)
- * - Interface Segregation Principle (SOLID - OOP Module 4)
+ * - Interface Definition
+ * - Method Overloading in Interface
+ * - Checked Exception declaration
+ * - Interface Segregation Principle
  */
 public interface TextAnalyzer {
 

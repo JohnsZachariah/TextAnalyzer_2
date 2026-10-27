@@ -31,6 +31,10 @@ public class WordFrequency implements Comparable<WordFrequency> {
         return count;
     }
 
+    public int getFrequency() {
+        return count;
+    }
+
     public double getPercentage() {
         return percentage;
     }

@@ -152,10 +152,16 @@ public final class JsonUtil {
                 sb.append("{\"id\":\"").append(escape(rec.getId())).append("\",")
                   .append("\"title\":\"").append(escape(rec.getTitle())).append("\",")
                   .append("\"preview\":\"").append(escape(rec.getPreview())).append("\",")
+                  .append("\"fullText\":\"").append(escape(rec.getFullText())).append("\",")
                   .append("\"savedAt\":\"").append(escape(rec.getSavedAt())).append("\",")
                   .append("\"wordCount\":").append(rec.getWordCount()).append(",")
                   .append("\"charCount\":").append(rec.getCharCount()).append(",")
-                  .append("\"sentenceCount\":").append(rec.getSentenceCount()).append("}");
+                  .append("\"sentenceCount\":").append(rec.getSentenceCount()).append(",")
+                  .append("\"vowelCount\":").append(rec.getVowelCount()).append(",")
+                  .append("\"consonantCount\":").append(rec.getConsonantCount()).append(",")
+                  .append("\"readingEase\":").append(rec.getReadingEase()).append(",")
+                  .append("\"longestWord\":\"").append(escape(rec.getLongestWord())).append("\",")
+                  .append("\"readingTimeMinutes\":").append(rec.getReadingTimeMinutes()).append("}");
             }
         }
         sb.append("]");

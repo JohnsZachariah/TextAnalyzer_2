@@ -91,12 +91,14 @@ public class FileStorageService implements StorageService {
                     String id = (String) map.getOrDefault("id", "REC-" + System.currentTimeMillis());
                     String title = (String) map.getOrDefault("title", "Untitled");
                     String preview = (String) map.getOrDefault("preview", "");
+                    String fullText = (String) map.getOrDefault("fullText", preview);
                     String savedAt = (String) map.getOrDefault("savedAt", "");
                     int wordCount = ((Number) map.getOrDefault("wordCount", 0)).intValue();
                     int charCount = ((Number) map.getOrDefault("charCount", 0)).intValue();
                     int sentenceCount = ((Number) map.getOrDefault("sentenceCount", 0)).intValue();
 
-                    list.add(new HistoryRecord(id, title, preview, savedAt, wordCount, charCount, sentenceCount));
+                    list.add(new HistoryRecord(id, title, preview, savedAt, wordCount, charCount, sentenceCount,
+                            0, 0, 0.0, "", 0.0, null, fullText));
                 }
             }
         } catch (Exception ex) {
