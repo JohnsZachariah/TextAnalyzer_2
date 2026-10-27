@@ -1,0 +1,12 @@
+Object-Oriented Programming (OOP) in Java
+
+Object-Oriented Programming is a paradigm centered around objects rather than functions. In Java, everything revolves around classes, objects, and relationships.
+
+The Four Core Pillars of OOP:
+1. Encapsulation: Wrapping code and data together into a single unit. Private fields and public getters/setters protect object integrity.
+2. Abstraction: Hiding implementation details and showing only functionality to the user using abstract classes and interfaces.
+3. Inheritance: Mechanism where one object acquires all properties and behaviors of a parent object, promoting reusability.
+4. Polymorphism: Ability of a variable, function, or object to take on multiple forms through method overloading and method overriding.
+
+Java also provides powerful features including garbage collection, exception handling, multithreading, and collections framework.
+Can text analysis help us uncover statistical patterns in natural language? Yes! By inspecting word counts, character frequencies, vowel distribution, and sentence structures, text analyzers deliver quantitative insights into linguistic content.

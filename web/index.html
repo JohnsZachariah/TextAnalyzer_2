@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Counter & Text Analyzer | OOP Java Web Application</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="dark-theme">
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="logo-group">
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        <line x1="9" y1="7" x2="15" y2="7"></line>
+                        <line x1="9" y1="11" x2="13" y2="11"></line>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="logo-title">LexiCore Analyzer</h1>
+                    <span class="logo-subtitle">Java OOP Backend &bull; REST API &bull; MVC Architecture</span>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <div class="backend-status" id="backendStatus">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Backend: Connected (Java 21)</span>
+                </div>
+                <button class="btn-theme-toggle" id="themeToggleBtn" title="Toggle Theme" aria-label="Toggle Theme">
+                    <svg id="themeIconSun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <!-- Input & Controls Section -->
+        <section class="card input-section">
+            <div class="section-header">
+                <div class="source-info">
+                    <span class="badge badge-primary" id="sourceBadge">Direct Input</span>
+                    <span class="source-details" id="sourceDetails">Ready for text analysis</span>
+                </div>
+                <div class="quick-samples">
+                    <span class="sample-label">Samples:</span>
+                    <button class="btn btn-sm btn-ghost" id="sampleTechBtn">Technology</button>
+                    <button class="btn btn-sm btn-ghost" id="sampleLitBtn">Literature</button>
+                    <button class="btn btn-sm btn-ghost text-danger" id="clearTextBtn">Clear</button>
+                </div>
+            </div>
+
+            <!-- Editor Wrapper -->
+            <div class="editor-wrapper">
+                <textarea 
+                    id="mainTextInput" 
+                    placeholder="Type or paste your text here to begin analysis, or drag and drop a .txt file..."
+                    rows="9"
+                    spellcheck="false"
+                ></textarea>
+                <div id="dropOverlay" class="drop-overlay hidden">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <span>Drop your text file here</span>
+                </div>
+            </div>
+
+            <!-- Real-time Live Mini-Counter & File Uploader -->
+            <div class="editor-footer">
+                <div class="live-stats">
+                    <span class="live-stat-item">Words: <strong id="liveWordCount">0</strong></span>
+                    <span class="live-stat-item">Chars (with spaces): <strong id="liveCharCount">0</strong></span>
+                    <span class="live-stat-item">Chars (no spaces): <strong id="liveCharNoSpaces">0</strong></span>
+                </div>
+                <div class="file-actions">
+                    <input type="file" id="fileInput" accept=".txt,.md,.csv,.log,.json" style="display: none;">
+                    <button class="btn btn-secondary btn-sm" id="uploadFileBtn">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        Upload Text File
+                    </button>
+                </div>
+            </div>
+
+            <!-- Primary Action Bar -->
+            <div class="action-bar">
+                <button class="btn btn-primary btn-lg" id="analyzeBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                    Analyze Text
+                </button>
+
+                <div class="action-btn-group">
+                    <button class="btn btn-secondary" id="openSearchTabBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        Search
+                    </button>
+                    <button class="btn btn-secondary" id="openDictionaryTabBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                        Dictionary
+                    </button>
+                    <button class="btn btn-secondary" id="openTranslateTabBtn">
+                        🌐 Translate
+                    </button>
+                    <button class="btn btn-secondary" id="openReplaceTabBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                        </svg>
+                        Find & Replace
+                    </button>
+                    <div class="dropdown-wrapper">
+                        <button class="btn btn-secondary dropdown-toggle" id="caseDropdownBtn">
+                            Case Conversion &#9662;
+                        </button>
+                        <div class="dropdown-menu hidden" id="caseDropdownMenu">
+                            <button class="dropdown-item" data-case="UPPERCASE">UPPERCASE</button>
+                            <button class="dropdown-item" data-case="LOWERCASE">lowercase</button>
+                            <button class="dropdown-item" data-case="TITLE_CASE">Title Case</button>
+                            <button class="dropdown-item" data-case="SENTENCE_CASE">Sentence case</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" id="saveHistoryBtn" title="Save analysis permanently">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                            <polyline points="7 3 7 8 15 8"></polyline>
+                        </svg>
+                        Save
+                    </button>
+                    <div class="dropdown-wrapper">
+                        <button class="btn btn-outline dropdown-toggle" id="exportDropdownBtn">
+                            Export Report &#9662;
+                        </button>
+                        <div class="dropdown-menu hidden" id="exportDropdownMenu">
+                            <button class="dropdown-item" id="exportTxtBtn">Plain Text Report (.txt)</button>
+                            <button class="dropdown-item" id="exportJsonBtn">JSON Data Report (.json)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- KPI Metrics Grid -->
+        <section class="kpi-grid" id="kpiGrid">
+            <div class="kpi-card">
+                <div class="kpi-icon icon-blue">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 7V4h16v3M9 20h6M12 4v16"></path>
+                    </svg>
+                </div>
+                <div class="kpi-content">
+                    <span class="kpi-label">Total Words</span>
+                    <h3 class="kpi-val" id="metricWords">0</h3>
+                    <span class="kpi-sub" id="metricUniqueWords">0 unique words</span>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon icon-purple">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                        <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                    </svg>
+                </div>
+                <div class="kpi-content">
+                    <span class="kpi-label">Characters (w/ spaces)</span>
+                    <h3 class="kpi-val" id="metricCharsWithSpaces">0</h3>
+                    <span class="kpi-sub" id="metricCharsNoSpaces">0 without spaces</span>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon icon-green">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                </div>
+                <div class="kpi-content">
+                    <span class="kpi-label">Sentences</span>
+                    <h3 class="kpi-val" id="metricSentences">0</h3>
+                    <span class="kpi-sub" id="metricParagraphs">0 paragraphs</span>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon icon-amber">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 14 14"></polyline>
+                    </svg>
+                </div>
+                <div class="kpi-content">
+                    <span class="kpi-label">Vowels vs Consonants</span>
+                    <h3 class="kpi-val" id="metricVowelsConsonants">0 / 0</h3>
+                    <span class="kpi-sub" id="metricVowelRatio">Vowels : Consonants</span>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon icon-teal">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                </div>
+                <div class="kpi-content">
+                    <span class="kpi-label">Est. Reading Time</span>
+                    <h3 class="kpi-val" id="metricReadingTime">0.0m</h3>
+                    <span class="kpi-sub" id="metricAvgWordLength">Avg length: 0 chars</span>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon icon-rose">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                </div>
+                <div class="kpi-content">
+                    <span class="kpi-label">Readability (Flesch)</span>
+                    <h3 class="kpi-val" id="metricReadabilityScore">0.0</h3>
+                    <span class="kpi-sub badge badge-score" id="metricReadabilityLevel">Standard</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Detailed Feature Tabs Section -->
+        <section class="card tabs-section">
+            <div class="tabs-header">
+                <button class="tab-btn active" data-tab="tabFrequency">
+                    📊 Word Frequency
+                </button>
+                <button class="tab-btn" data-tab="tabCharacters">
+                    🔡 Vowels & Breakdown
+                </button>
+                <button class="tab-btn" data-tab="tabExtremes">
+                    📏 Longest & Shortest
+                </button>
+                <button class="tab-btn" data-tab="tabSearch">
+                    🔍 Search Word
+                </button>
+                    <button class="tab-btn" data-tab="tabReplace">
+                    🔁 Find & Replace
+                </button>
+                <button class="tab-btn" data-tab="tabDictionary">
+                    📖 Dictionary
+                </button>
+                <button class="tab-btn" data-tab="tabTranslate">
+                    🌐 Translate
+                </button>
+                <button class="tab-btn" data-tab="tabHistory">
+                    💾 Sessions & History
+                </button>
+            </div>
+
+            <div class="tabs-body">
+                <!-- TAB 1: Word Frequency -->
+                <div class="tab-panel active" id="tabFrequency">
+                    <div class="tab-subnav">
+                        <div class="search-input-wrapper">
+                            <input type="text" id="frequencySearchInput" placeholder="Filter words...">
+                        </div>
+                        <span class="text-muted" id="frequencyCountSummary">Showing top words</span>
+                    </div>
+
+                    <div class="frequency-view-grid">
+                        <div class="chart-container">
+                            <h4 class="subhead">Top Occurrences Chart</h4>
+                            <div class="bars-chart" id="frequencyBarsChart">
+                                <div class="empty-state">Run analysis to see word frequency chart.</div>
+                            </div>
+                        </div>
+
+                        <div class="table-container">
+                            <h4 class="subhead">Frequency Table</h4>
+                            <div class="table-scroll">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Word</th>
+                                            <th>Occurrences</th>
+                                            <th>Percentage</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="frequencyTableBody">
+                                        <tr><td colspan="4" class="text-center text-muted">No data available</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: Vowels & Character Breakdown -->
+                <div class="tab-panel" id="tabCharacters">
+                    <div class="character-details-grid">
+                        <div class="vowels-box">
+                            <h4 class="subhead">Vowel Distribution Breakdown</h4>
+                            <div class="vowel-bars" id="vowelBarsContainer">
+                                <div class="vowel-bar-row">
+                                    <span class="vowel-letter">A</span>
+                                    <div class="prog-track"><div class="prog-fill" id="vowelA" style="width: 0%"></div></div>
+                                    <span class="vowel-num" id="vowelCountA">0</span>
+                                </div>
+                                <div class="vowel-bar-row">
+                                    <span class="vowel-letter">E</span>
+                                    <div class="prog-track"><div class="prog-fill" id="vowelE" style="width: 0%"></div></div>
+                                    <span class="vowel-num" id="vowelCountE">0</span>
+                                </div>
+                                <div class="vowel-bar-row">
+                                    <span class="vowel-letter">I</span>
+                                    <div class="prog-track"><div class="prog-fill" id="vowelI" style="width: 0%"></div></div>
+                                    <span class="vowel-num" id="vowelCountI">0</span>
+                                </div>
+                                <div class="vowel-bar-row">
+                                    <span class="vowel-letter">O</span>
+                                    <div class="prog-track"><div class="prog-fill" id="vowelO" style="width: 0%"></div></div>
+                                    <span class="vowel-num" id="vowelCountO">0</span>
+                                </div>
+                                <div class="vowel-bar-row">
+                                    <span class="vowel-letter">U</span>
+                                    <div class="prog-track"><div class="prog-fill" id="vowelU" style="width: 0%"></div></div>
+                                    <span class="vowel-num" id="vowelCountU">0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="character-types-box">
+                            <h4 class="subhead">Character Composition</h4>
+                            <ul class="stats-list">
+                                <li>
+                                    <span>Alphabetical Letters</span>
+                                    <strong id="charLetters">0</strong>
+                                </li>
+                                <li>
+                                    <span>Digits (0-9)</span>
+                                    <strong id="charDigits">0</strong>
+                                </li>
+                                <li>
+                                    <span>Special & Punctuation Characters</span>
+                                    <strong id="charSpecial">0</strong>
+                                </li>
+                                <li>
+                                    <span>Total Vowels</span>
+                                    <strong id="charTotalVowels">0</strong>
+                                </li>
+                                <li>
+                                    <span>Total Consonants</span>
+                                    <strong id="charTotalConsonants">0</strong>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: Longest & Shortest Words -->
+                <div class="tab-panel" id="tabExtremes">
+                    <div class="extremes-grid">
+                        <div class="extreme-card card-longest">
+                            <div class="extreme-badge">Maximum Length</div>
+                            <h4 class="extreme-title">Longest Word(s)</h4>
+                            <div class="extreme-stat">
+                                <span class="extreme-length" id="longestLength">0</span>
+                                <span class="extreme-unit">characters</span>
+                            </div>
+                            <div class="extreme-word-list" id="longestWordList">
+                                <span class="empty-badge">None</span>
+                            </div>
+                        </div>
+
+                        <div class="extreme-card card-shortest">
+                            <div class="extreme-badge">Minimum Length</div>
+                            <h4 class="extreme-title">Shortest Word(s)</h4>
+                            <div class="extreme-stat">
+                                <span class="extreme-length" id="shortestLength">0</span>
+                                <span class="extreme-unit">characters</span>
+                            </div>
+                            <div class="extreme-word-list" id="shortestWordList">
+                                <span class="empty-badge">None</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 4: Search Word -->
+                <div class="tab-panel" id="tabSearch">
+                    <div class="tool-panel">
+                        <div class="tool-form">
+                            <div class="form-row">
+                                <input type="text" id="searchWordInput" class="form-input" placeholder="Enter word or phrase to locate...">
+                                <button class="btn btn-primary" id="executeSearchBtn">Search Text</button>
+                            </div>
+                            <div class="form-options">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="searchMatchCase"> Match Case
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="searchWholeWord"> Whole Words Only
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="search-result-box" id="searchResultBox">
+                            <div class="search-status" id="searchStatusText">
+                                Enter a word to scan the document.
+                            </div>
+                            <div class="matched-snippets hidden" id="searchSnippetsContainer">
+                                <h5>Sample Context Matches:</h5>
+                                <div id="searchSnippetsList"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 5: Find & Replace -->
+                <div class="tab-panel" id="tabReplace">
+                    <div class="tool-panel">
+                        <div class="tool-form">
+                            <div class="form-grid-2">
+                                <div class="form-group">
+                                    <label>Find What:</label>
+                                    <input type="text" id="findTargetInput" class="form-input" placeholder="Text to replace...">
+                                </div>
+                                <div class="form-group">
+                                    <label>Replace With:</label>
+                                    <input type="text" id="findReplacementInput" class="form-input" placeholder="Replacement text...">
+                                </div>
+                            </div>
+                            <div class="form-options">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="replaceMatchCase"> Case-sensitive
+                                </label>
+                            </div>
+                            <div class="tool-buttons">
+                                <button class="btn btn-primary" id="executeReplaceBtn">Replace All</button>
+                                <button class="btn btn-outline" id="applyReplaceToMainBtn" disabled>Update Main Textarea</button>
+                            </div>
+                        </div>
+
+                        <div class="preview-box">
+                            <h5>Replacement Preview:</h5>
+                            <textarea id="replacePreviewText" rows="6" readonly placeholder="Result will appear here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 6: Dictionary -->
+                <div class="tab-panel" id="tabDictionary">
+                    <div class="tool-panel">
+                        <div class="tool-form">
+                            <div class="form-row">
+                                <input type="text" id="dictionaryWordInput" class="form-input" placeholder="Enter an English word (or click a word in Frequency)...">
+                                <button class="btn btn-primary" id="lookupWordBtn">Look Up Meaning</button>
+                            </div>
+                            <p class="text-muted">Uses the Free Dictionary API with SQLite JDBC cache. Lookups are stored in this session.</p>
+                        </div>
+                        <div class="dictionary-result" id="dictionaryResultBox">
+                            <div class="empty-state">Look up a word to see its definition, phonetic spelling, and examples.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 7: Translate -->
+                <div class="tab-panel" id="tabTranslate">
+                    <div class="tool-panel">
+                        <div class="tool-form">
+                            <div class="form-group">
+                                <label>Translate from English to</label>
+                                <div class="lang-toggle">
+                                    <label class="checkbox-label">
+                                        <input type="radio" name="targetLang" value="hi" checked> Hindi (हिंदी)
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="radio" name="targetLang" value="ml"> Malayalam (മലയാളം)
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="tool-buttons">
+                                <button class="btn btn-primary" id="translateTextBtn">Translate Editor Text</button>
+                                <button class="btn btn-outline" id="applyTranslationBtn" disabled>Replace Editor with Translation</button>
+                            </div>
+                        </div>
+                        <div class="preview-box">
+                            <h5>Translated paragraph</h5>
+                            <textarea id="translationOutput" rows="8" readonly placeholder="Hindi or Malayalam translation will appear here..."></textarea>
+                            <p class="text-muted" id="translationMeta"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 8: History & Session Activity -->
+                <div class="tab-panel" id="tabHistory">
+                    <div class="history-panel">
+                        <div class="history-header">
+                            <div>
+                                <h4 class="subhead">JDBC SQLite Database</h4>
+                                <p class="text-muted" id="databaseStatusText">Sessions and activities stored in data/textanalyzer.db via JDBC.</p>
+                            </div>
+                            <button class="btn btn-sm btn-secondary" id="refreshHistoryBtn">Refresh</button>
+                        </div>
+
+                        <h4 class="subhead">This session's activities</h4>
+                        <div class="history-list" id="sessionActivityList">
+                            <div class="empty-state">No activities yet. Analyze, look up, or translate text.</div>
+                        </div>
+
+                        <h4 class="subhead" style="margin-top: 22px;">Saved analysis records</h4>
+                        <div class="history-list" id="historyListContainer">
+                            <div class="empty-state">No saved history sessions yet. Click "Save" on any analysis!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden"></div>
+
+    <!-- Export Modal -->
+    <div id="exportModal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="exportModalTitle">Analysis Report</h3>
+                <button class="modal-close-btn" id="closeExportModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <pre id="exportModalContent"></pre>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="copyReportBtn">Copy to Clipboard</button>
+                <button class="btn btn-primary" id="downloadReportFileBtn">Download File</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Application -->
+    <script src="app.js"></script>
+</body>
+</html>
