@@ -1,0 +1,59 @@
+========================================================================
+                  WORD COUNTER & TEXT ANALYZER REPORT                  
+========================================================================
+ Document ID   : DOC-1793202718911
+ Source        : Manuscript
+ Generated At  : 2026-10-28 21:21:58
+------------------------------------------------------------------------
+ 1. GENERAL METRICS
+    - Total Words                  : 387
+    - Total Characters (w/ spaces) : 1,937
+    - Characters (without spaces)  : 1,550
+    - Letters                      : 1,481
+    - Digits                       : 0
+    - Special Characters           : 69
+    - Sentences                    : 17
+    - Paragraphs                   : 1
+------------------------------------------------------------------------
+ 2. CHARACTER & PHONETIC ANALYSIS
+    - Total Vowels                 : 576
+    - Total Consonants             : 905
+    - Vowel Distribution          : [A: 122] [I: 94] [E: 213] [U: 31] [O: 116] 
+------------------------------------------------------------------------
+ 3. VOCABULARY & EXTREMES
+    - Unique Words                 : 196
+    - Average Word Length          : 3.86 characters
+    - Longest Word Length          : 19 characters
+      Longest Words                : frozen-ground-swell
+    - Shortest Word Length         : 1 characters
+      Shortest Words               : a, i
+------------------------------------------------------------------------
+ 4. READABILITY & TIMING
+    - Estimated Reading Time       : 1.94 min (at ~200 WPM)
+    - Flesch Reading Ease Score    : 81.2 / 100
+    - Readability Level            : Easy (6th grade level)
+------------------------------------------------------------------------
+ 5. TOP WORD FREQUENCIES (UP TO TOP 20)
+     1. the                  :   17 occurrences (4.39%)
+     2. and                  :   14 occurrences (3.62%)
+     3. i                    :   12 occurrences (3.10%)
+     4. to                   :   12 occurrences (3.10%)
+     5. a                    :    9 occurrences (2.33%)
+     6. it                   :    8 occurrences (2.07%)
+     7. he                   :    7 occurrences (1.81%)
+     8. there                :    7 occurrences (1.81%)
+     9. we                   :    7 occurrences (1.81%)
+    10. in                   :    6 occurrences (1.55%)
+    11. is                   :    6 occurrences (1.55%)
+    12. of                   :    6 occurrences (1.55%)
+    13. them                 :    6 occurrences (1.55%)
+    14. wall                 :    6 occurrences (1.55%)
+    15. are                  :    5 occurrences (1.29%)
+    16. good                 :    5 occurrences (1.29%)
+    17. have                 :    5 occurrences (1.29%)
+    18. not                  :    5 occurrences (1.29%)
+    19. that                 :    5 occurrences (1.29%)
+    20. but                  :    4 occurrences (1.03%)
+========================================================================
+                  END OF TEXT ANALYSIS REPORT                         
+========================================================================
